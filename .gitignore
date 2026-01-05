@@ -1,0 +1,34 @@
+# --------------------
+# Rust
+# --------------------
+/target/
+**/*.rs.bk
+
+# --------------------
+# Node / TypeScript
+# --------------------
+ts/node_modules/
+ts/.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TS build output (future-proof)
+ts/dist/
+ts/build/
+
+# --------------------
+# Environment
+# --------------------
+.env
+.env.*
+
+# --------------------
+# OS / Editor
+# --------------------
+.DS_Store
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp

@@ -1,0 +1,21 @@
+{
+  "name": "iseefortune-verifier-ts",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "verify": "tsx src/cli.ts",
+    "test:vectors": "tsx scripts/test-vectors.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.8.0",
+    "bs58": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "tsx": "^4.20.0",
+    "typescript": "^5.6.3"
+  }
+}

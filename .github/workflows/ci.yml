@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # -----------------------
+      # Rust
+      # -----------------------
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run Rust tests
+        run: cargo test --all --locked
+
+      # -----------------------
+      # Node / TypeScript
+      # -----------------------
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install TS dependencies
+        working-directory: ts
+        run: npm ci
+
+      - name: TypeScript typecheck
+        working-directory: ts
+        run: npm run typecheck
+
+      - name: TypeScript vector tests
+        working-directory: ts
+        run: npm run test:vectors
