@@ -8,7 +8,11 @@ app.innerHTML = `
   <div class="header">
        <h1>ISeeFortune Verifier</h1>
         <div class="small">
-          Computes the winning number locally in your browser using the algorithm in <a href="../SPEC.md">SPEC.md</a>.
+          Computes the winning number locally in your browser using the algorithm in <a
+              href="https://github.com/IC42N/iseefortune-verifier/blob/main/SPEC.md"
+              target="_blank"
+              rel="noreferrer"
+            >SPEC.md</a>.
         </div>
     </div>
    
@@ -42,7 +46,7 @@ app.innerHTML = `
     </div>
 
     <div style="height:14px"></div>
-    <div class="small">
+    <div class="small text-center">
       Tip: this site is static; you can inspect-source and reproduce the same output with the Rust/TS tools in the repo.
     </div>
   </div>
