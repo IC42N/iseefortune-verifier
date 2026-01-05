@@ -1,3 +1,5 @@
+![CI](https://github.com/IC42N/iseefortune-verifier/actions/workflows/ci.yml/badge.svg)
+
 # I See Fortune Winning Number Verifier
 
 A deterministic, open-source verifier for the **ISeeFortune** winning number.
