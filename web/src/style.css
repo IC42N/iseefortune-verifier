@@ -34,10 +34,7 @@ html, body { height: 100%; }
 body {
     margin: 0;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-
-    background:
-            radial-gradient(900px 600px at 20% 8%, rgba(155, 220, 255, 0.09), transparent 62%), radial-gradient(800px 520px at 80% 12%, rgba(127, 176, 105, 0.07), transparent 64%), radial-gradient(900px 700px at 50% 110%, rgba(155, 220, 255, 0.05), transparent 66%), linear-gradient(180deg, #1c295b, #441e43);
-
+    background: #11273f;
     color: var(--text);
 }
 
@@ -179,8 +176,8 @@ input[type="checkbox"] {
 button {
     padding: 10px 14px;
     border-radius: var(--r10);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: linear-gradient(180deg, var(--accent2), var(--accent));
+    border: 1px solid #294a6d;
+    background: #11273f;
     color: var(--text);
     cursor: pointer;
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
