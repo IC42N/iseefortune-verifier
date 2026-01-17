@@ -2,8 +2,20 @@ import "./style.css";
 import { verifyFromSlotAndBlockhash } from "./verify";
 import { Connection, EpochSchedule } from "@solana/web3.js";
 
+/**
+ * ---------------------------------------------------------------------------
+ * Config
+ * ---------------------------------------------------------------------------
+ */
 const DEFAULT_RPC = "https://bernette-tb3sav-fast-mainnet.helius-rpc.com/";
 const DEFAULT_RANGE = 10;
+const EXPLORER_BASE = "https://explorer.solana.com";
+
+/**
+ * ---------------------------------------------------------------------------
+ * Render UI (static HTML)
+ * ---------------------------------------------------------------------------
+ */
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
 app.innerHTML = `
@@ -31,7 +43,13 @@ app.innerHTML = `
         <div class="row">
           <div class="field" style="flex: 1 1 220px;">
             <label for="epoch">Epoch</label>
-            <input id="epoch" placeholder="e.g. 700" inputmode="numeric" />
+            <input
+              id="epoch"
+              placeholder="e.g. 900"
+              inputmode="numeric"
+              pattern="\\d*"
+              autocomplete="off"
+            />
           </div>
 
           <div class="field" style="flex: 3 1 520px;">
@@ -68,6 +86,11 @@ app.innerHTML = `
           <label class="small" style="display:flex; gap:8px; align-items:center;">
             <input id="debug" type="checkbox" />
             Show debug
+          </label>
+
+          <label class="small" style="display:flex; gap:8px; align-items:center;">
+            <input id="raw" type="checkbox" />
+            Show raw (JSON)
           </label>
 
           <button id="go" type="button">Verify</button>
@@ -118,7 +141,7 @@ app.innerHTML = `
         </ol>
 
         <p class="hint">
-          Zero trust, by design. No need to trust the website, its backend, or its creator.  If two people use the same epoch and blockhash, they will always get the same result — forever.
+          Zero trust, by design. No need to trust the website, its backend, or its creator. If two people use the same epoch and blockhash, they will always get the same result — forever.
         </p>
       </div>
     </section>
@@ -129,6 +152,11 @@ app.innerHTML = `
   </div>
 `;
 
+/**
+ * ---------------------------------------------------------------------------
+ * DOM refs
+ * ---------------------------------------------------------------------------
+ */
 const epochEl = document.querySelector<HTMLInputElement>("#epoch")!;
 const rpcEl = document.querySelector<HTMLInputElement>("#rpc")!;
 const epochStatusEl = document.querySelector<HTMLDivElement>("#epochStatus")!;
@@ -137,10 +165,39 @@ const goEpochEl = document.querySelector<HTMLButtonElement>("#goEpoch")!;
 const slotEl = document.querySelector<HTMLInputElement>("#slot")!;
 const bhEl = document.querySelector<HTMLInputElement>("#blockhash")!;
 const dbgEl = document.querySelector<HTMLInputElement>("#debug")!;
-const outEl = document.querySelector<HTMLDivElement>("#out")!;
+const rawEl = document.querySelector<HTMLInputElement>("#raw")!;
 const goEl = document.querySelector<HTMLButtonElement>("#go")!;
+
+const outEl = document.querySelector<HTMLDivElement>("#out")!;
 const explorerLinksEl = document.querySelector<HTMLDivElement>("#explorerLinks")!;
 
+/**
+ * ---------------------------------------------------------------------------
+ * Input hygiene + small UX rules
+ * ---------------------------------------------------------------------------
+ */
+
+/** Strip non-digits (real enforcement; HTML inputmode/pattern is only a hint). */
+function digitsOnly(el: HTMLInputElement) {
+    el.addEventListener("input", () => {
+        const cleaned = el.value.replace(/[^\d]/g, "");
+        if (el.value !== cleaned) el.value = cleaned;
+    });
+}
+
+digitsOnly(epochEl);
+digitsOnly(slotEl);
+
+/** Debug output should override "pretty" (debug implies JSON). */
+dbgEl.addEventListener("change", () => {
+    if (dbgEl.checked) rawEl.checked = true;
+});
+
+/**
+ * ---------------------------------------------------------------------------
+ * Output helpers
+ * ---------------------------------------------------------------------------
+ */
 function stringifyBigIntSafe(obj: unknown) {
     return JSON.stringify(
         obj,
@@ -158,19 +215,44 @@ function showError(msg: string) {
     show({ error: msg });
 }
 
+function showPretty(base: any) {
+    const lines: string[] = [];
+
+    lines.push(`Winning number: ${base.winning_number}`);
+    lines.push(`Epoch slot: ${base.slot}`);
+    lines.push(`Blockhash: ${base.blockhash}`);
+    lines.push(`Range: ${base.range}`);
+    lines.push("");
+
+    lines.push("How it was computed:");
+    for (const step of base.calculation.steps) lines.push(`- ${step}`);
+    lines.push("");
+
+    lines.push("Key values:");
+    const r = base.calculation.rendered;
+    lines.push(`slot_u64_le_hex: ${r.slot_u64_le_hex}`);
+    lines.push(`blockhash_bytes_hex: ${r.blockhash_bytes_hex}`);
+    lines.push(`msg_hex: ${r.msg_hex}`);
+    lines.push(`digest_sha256_hex: ${r.digest_sha256_hex}`);
+    lines.push(`digest_sum_u64: ${r.digest_sum_u64}`);
+    lines.push(`modulus: ${r.modulus}`);
+
+    outEl.style.display = "block";
+    outEl.textContent = lines.join("\n");
+}
+
 function setEpochStatus(msg: string) {
     epochStatusEl.textContent = msg;
 }
 
-function resolveRpcUrl(raw: string): string {
-    const s = raw.trim();
-    if (!s) return DEFAULT_RPC;                 // empty => default
-    if (s.toLowerCase() === "default rpc") return DEFAULT_RPC; // just in case
-    return s;                                   // user supplied
-}
-
+/**
+ * ---------------------------------------------------------------------------
+ * Core verification (slot + blockhash)
+ * ---------------------------------------------------------------------------
+ */
 function buildCalculationSummary(res: ReturnType<typeof verifyFromSlotAndBlockhash>) {
     const d = res.debug;
+
     return {
         steps: [
             "slot_le = slot encoded as u64 little-endian (8 bytes)",
@@ -204,24 +286,30 @@ function runVerify(slotStr: string, blockhash: string) {
         calculation: buildCalculationSummary(res),
     };
 
+    // Debug: always JSON with internal debug payload
     if (dbgEl.checked) {
-        show({
-            ...base,
-            debug: res.debug,
-        });
+        show({ ...base, debug: res.debug });
+        return;
+    }
+
+    // Default: pretty output
+    if (rawEl.checked) {
+        show(base);          // raw JSON (clean)
     } else {
-        show(base);
+        showPretty(base);    // pretty text (default)
     }
 }
 
-const EXPLORER_BASE = "https://explorer.solana.com";
-
+/**
+ * ---------------------------------------------------------------------------
+ * Explorer links
+ * ---------------------------------------------------------------------------
+ */
 function explorerEpochUrl(epoch: number) {
     return `${EXPLORER_BASE}/epoch/${epoch}`;
 }
 
 function explorerBlockUrl(slot: number) {
-    // Solana explorer uses /block/<slot> (slot number)
     return `${EXPLORER_BASE}/block/${slot}`;
 }
 
@@ -242,7 +330,11 @@ function clearExplorerLinks() {
     explorerLinksEl.innerHTML = "";
 }
 
-
+/**
+ * ---------------------------------------------------------------------------
+ * Slot+blockhash verify button
+ * ---------------------------------------------------------------------------
+ */
 goEl.addEventListener("click", () => {
     try {
         const slotStr = slotEl.value.trim();
@@ -257,12 +349,25 @@ goEl.addEventListener("click", () => {
     }
 });
 
-// --- Epoch lookup + verify ---
+/**
+ * ---------------------------------------------------------------------------
+ * RPC helpers (epoch lookup path)
+ * ---------------------------------------------------------------------------
+ */
+function resolveRpcUrl(raw: string): string {
+    const s = raw.trim();
+    if (!s) return DEFAULT_RPC; // empty => default
+    if (s.toLowerCase() === "default rpc") return DEFAULT_RPC;
+    return s;
+}
+
+async function getCurrentEpoch(conn: Connection): Promise<number> {
+    const info = await conn.getEpochInfo("finalized");
+    return info.epoch;
+}
 
 async function fetchEpochSchedule(conn: Connection): Promise<EpochSchedule> {
     const raw: any = await conn.getEpochSchedule();
-    // Solana web3.js docs show the constructor signature clearly.
-    // [oai_citation:1‡Solana Foundation](https://solana-foundation.github.io/solana-web3.js/classes/EpochSchedule.html)
     return new EpochSchedule(
         raw.slotsPerEpoch,
         raw.leaderScheduleSlotOffset,
@@ -273,8 +378,7 @@ async function fetchEpochSchedule(conn: Connection): Promise<EpochSchedule> {
 }
 
 async function findExistingBlockhashNearSlot(conn: Connection, startSlot: number) {
-    // Walk backward to tolerate skipped slots / pruned blocks.
-    // Keep it modest so the UI stays snappy.
+    // Walk backward to tolerate skipped slots / pruned blocks
     const MAX_BACKTRACK = 500;
 
     for (let i = 0; i <= MAX_BACKTRACK; i++) {
@@ -282,7 +386,6 @@ async function findExistingBlockhashNearSlot(conn: Connection, startSlot: number
         if (slot < 0) break;
 
         try {
-            // Ask for minimal block payload.
             const block: any = await conn.getBlock(slot, {
                 commitment: "finalized",
                 transactionDetails: "none",
@@ -294,26 +397,53 @@ async function findExistingBlockhashNearSlot(conn: Connection, startSlot: number
                 return { slot, blockhash: String(block.blockhash) };
             }
         } catch {
-            // ignore and continue backtracking
+            // ignore and continue
         }
     }
 
-    throw new Error(`could not find a finalized block within ${MAX_BACKTRACK} slots of ${startSlot}`);
+    throw new Error(
+        `could not find a finalized block within ${MAX_BACKTRACK} slots of ${startSlot}`
+    );
 }
 
+/**
+ * ---------------------------------------------------------------------------
+ * Epoch -> (last slot) -> blockhash -> verify button
+ * ---------------------------------------------------------------------------
+ */
 goEpochEl.addEventListener("click", async () => {
     try {
         clearExplorerLinks();
+
         const epochStr = epochEl.value.trim();
         const rpcUrl = resolveRpcUrl(rpcEl.value);
 
         if (!epochStr) return showError("epoch is required");
         if (!/^\d+$/.test(epochStr)) return showError("epoch must be a non-negative integer");
-        const epoch = Number(epochStr);
 
-        setEpochStatus("Fetching epoch schedule...");
+        const epoch = Number(epochStr);
         const conn = new Connection(rpcUrl, "finalized");
 
+        // Guard: current epoch or future epoch cannot be verified yet
+        setEpochStatus("Checking current epoch...");
+        const currentEpoch = await getCurrentEpoch(conn);
+
+        if (epoch >= currentEpoch) {
+            setEpochStatus("Not available yet.");
+            show({
+                error: "Epoch has not ended yet, or epoch is in the future",
+                requested_epoch: epoch,
+                current_epoch: currentEpoch,
+            });
+            return;
+        }
+
+        // Only sync the URL once we know the epoch is valid (ended)
+        const url = new URL(window.location.href);
+        url.searchParams.set("epoch", String(epoch));
+        history.replaceState({}, "", url.toString());
+
+        setEpochStatus("Fetching epoch schedule...");
         const sched = await fetchEpochSchedule(conn);
 
         const lastSlot = sched.getLastSlotInEpoch(epoch);
@@ -321,11 +451,10 @@ goEpochEl.addEventListener("click", async () => {
         setEpochStatus(`Epoch ${epoch} → last slot ≈ ${lastSlot}. Fetching blockhash...`);
         const found = await findExistingBlockhashNearSlot(conn, lastSlot);
 
-        // Populate the other form too (nice UX)
+        // Populate slot + blockhash fields too
         slotEl.value = String(found.slot);
         bhEl.value = found.blockhash;
 
-        // Show explorer links
         showExplorerLinks(epoch, found.slot);
 
         setEpochStatus(`Found finalized slot ${found.slot}. Verifying...`);
@@ -338,6 +467,11 @@ goEpochEl.addEventListener("click", async () => {
     }
 });
 
+/**
+ * ---------------------------------------------------------------------------
+ * Tabs
+ * ---------------------------------------------------------------------------
+ */
 function setActiveTab(name: string) {
     document.querySelectorAll<HTMLButtonElement>(".tab").forEach((btn) => {
         btn.classList.toggle("isActive", btn.dataset.tab === name);
@@ -352,13 +486,38 @@ document.querySelectorAll<HTMLButtonElement>(".tab").forEach((btn) => {
     btn.addEventListener("click", () => {
         const tab = btn.dataset.tab;
         if (!tab) return;
-
         setActiveTab(tab);
-
-        // Nice UX: when switching, keep output visible if you're on slot tab
-        if (tab !== "slot") {
-            // optional: hide output when leaving slot tab
-            // outEl.style.display = "none";
-        }
     });
+});
+
+/**
+ * ---------------------------------------------------------------------------
+ * Deep link support: /?epoch=911
+ * - Prefills the epoch input
+ * - Auto-runs the epoch verification flow once per page load
+ * ---------------------------------------------------------------------------
+ */
+function getQueryParam(name: string): string | null {
+    return new URLSearchParams(window.location.search).get(name);
+}
+
+function parseNonNegativeInt(s: string | null): number | null {
+    if (!s) return null;
+    if (!/^\d+$/.test(s)) return null;
+    const n = Number(s);
+    return Number.isFinite(n) ? n : null;
+}
+
+let didAutoRun = false;
+
+window.addEventListener("DOMContentLoaded", () => {
+    if (didAutoRun) return;
+
+    const epoch = parseNonNegativeInt(getQueryParam("epoch"));
+    if (epoch == null) return;
+
+    didAutoRun = true;
+    epochEl.value = String(epoch);
+    setActiveTab("epoch");
+    goEpochEl.click();
 });

@@ -2,7 +2,6 @@ import { base58 } from "@scure/base";
 import { sha256 } from "@noble/hashes/sha2";
 import { bytesToHex } from "@noble/hashes/utils";
 
-
 export type VerifyDebug = {
     decodedLen: number;
 
