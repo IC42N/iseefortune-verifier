@@ -31,7 +31,7 @@ app.innerHTML = `
         >SPEC.md</a>.
       </div>
     </div>
-
+    
     <div class="tabs">
       <button class="tab isActive" data-tab="epoch" type="button">Verify Winning Number</button>
       <button class="tab" data-tab="overview" type="button">Overview</button>
@@ -39,6 +39,12 @@ app.innerHTML = `
 
     <!-- Panels -->
     <section class="panel isActive" data-panel="epoch">
+    
+    <div class="instructions">
+       This form lets you quickly double-check the winning number for any I See Fortune game using only public Solana blockchain data. Just enter an epoch (or a slot and blockhash), and your browser will recompute the result instantly. 
+       No accounts, no servers making decisions behind the scenes. Just a transparent calculation you can see and verify for yourself. Go to overview to learn more about the calculation.
+    </div>
+   
       <div class="card">
         <div class="row">
           <div class="field" style="flex: 1 1 220px;">
