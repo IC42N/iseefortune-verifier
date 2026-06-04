@@ -173,27 +173,25 @@ function runVerify(
 //
 
 goEl.addEventListener("click", () => {
-    try {
-        clearExplorerLinks(explorerLinksEl);
+    clearExplorerLinks(explorerLinksEl);
 
-        const slotStr = slotEl.value.trim();
-        const blockhash = bhEl.value.trim();
+    const slotStr = slotEl.value.trim();
+    const blockhash = bhEl.value.trim();
 
-        if (!slotStr) {
-            throw new Error("slot is required");
-        }
-
-        if (!blockhash) {
-            throw new Error("blockhash is required");
-        }
-
-        runVerify(
-            slotStr,
-            blockhash,
-        );
-    } catch (err) {
-        console.error(err);
+    if (!slotStr) {
+        console.error("slot is required");
+        return;
     }
+
+    if (!blockhash) {
+        console.error("blockhash is required");
+        return;
+    }
+
+    runVerify(
+        slotStr,
+        blockhash,
+    );
 });
 
 //
@@ -201,59 +199,50 @@ goEl.addEventListener("click", () => {
 //
 
 goEpochEl.addEventListener("click", async () => {
+    clearExplorerLinks(explorerLinksEl);
+    setNetworkStatus("Fetching");
+
+    const epochStr = epochEl.value.trim();
+
+    if (!epochStr) {
+        setNetworkStatus("Ready");
+        setEpochStatus("Epoch is required.");
+        return;
+    }
+
+    if (!/^\d+$/.test(epochStr)) {
+        setNetworkStatus("Ready");
+        setEpochStatus("Epoch must be a non-negative integer.");
+        return;
+    }
+
+    const rpcUrl = rpcEl.value.trim() || DEFAULT_RPC;
+    const epoch = Number(epochStr);
+
     try {
-        clearExplorerLinks(explorerLinksEl);
+        const conn = new Connection(rpcUrl, "finalized");
 
-        setNetworkStatus("Fetching");
+        setEpochStatus("Checking epoch status...");
 
-        const epochStr = epochEl.value.trim();
-
-        if (!epochStr) {
-            throw new Error("epoch is required");
-        }
-
-        const rpcUrl =
-            rpcEl.value.trim() || DEFAULT_RPC;
-
-        const epoch = Number(epochStr);
-
-        const conn = new Connection(
-            rpcUrl,
-            "finalized",
-        );
-
-        setEpochStatus(
-            "Checking epoch status..."
-        );
-
-        const currentEpoch =
-            await getCurrentEpoch(conn);
+        const currentEpoch = await getCurrentEpoch(conn);
 
         if (epoch >= currentEpoch) {
-            throw new Error(
-                `Epoch ${epoch} has not ended yet.`
-            );
+            setNetworkStatus("Waiting");
+            setEpochStatus(`Epoch ${epoch} has not ended yet.`);
+            return;
         }
 
-        setEpochStatus(
-            "Fetching epoch schedule..."
+        setEpochStatus("Fetching epoch schedule...");
+
+        const schedule = await fetchEpochSchedule(conn);
+        const lastSlot = schedule.getLastSlotInEpoch(epoch);
+
+        setEpochStatus("Searching for finalized blockhash...");
+
+        const found = await findExistingBlockhashNearSlot(
+            conn,
+            lastSlot,
         );
-
-        const schedule =
-            await fetchEpochSchedule(conn);
-
-        const lastSlot =
-            schedule.getLastSlotInEpoch(epoch);
-
-        setEpochStatus(
-            "Searching for finalized blockhash..."
-        );
-
-        const found =
-            await findExistingBlockhashNearSlot(
-                conn,
-                lastSlot,
-            );
 
         slotEl.value = String(found.slot);
         bhEl.value = found.blockhash;
@@ -270,10 +259,7 @@ goEpochEl.addEventListener("click", async () => {
             epoch,
         );
 
-        setEpochStatus(
-            `Verified epoch ${epoch}`
-        );
-
+        setEpochStatus(`Verified epoch ${epoch}`);
         setNetworkStatus("Finalized");
     } catch (err) {
         console.error(err);
