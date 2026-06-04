@@ -5,7 +5,7 @@ export function renderLayout() {
       <main class="shell">
         <section class="hero">
             <div class="brandRow">
-                <img src="/assets/logo.png" alt="I See Fortune" />
+                <img src="./assets/logo.png" alt="I See Fortune" />
                 <div>
                     <div class="brand">I See Fortune</div>
                     <div class="brandSub">Winning Number Verifier</div>

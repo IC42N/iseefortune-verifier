@@ -28,6 +28,7 @@ import {
     setLastVerification,
 } from "./state";
 import {renderIcons} from "./ui/icons";
+import {bindModes, bindTabs} from "./ui/tabs";
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
@@ -278,4 +279,12 @@ goEpochEl.addEventListener("click", async () => {
 // Startup
 //
 
+//
+// Startup
+//
+
+bindTabs();
+bindModes();
+
 refreshTechnicalOutput();
+renderIcons();
