@@ -29,6 +29,7 @@ import {
 } from "./state";
 import {renderIcons} from "./ui/icons";
 import {bindModes, bindTabs} from "./ui/tabs";
+import {wireCopyButtons} from "./utils/copy";
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
@@ -165,8 +166,11 @@ function runVerify(
             generatedAt: new Date().toLocaleString(),
         },
     );
+
     renderIcons();
+    wireCopyButtons();
     refreshTechnicalOutput();
+
 }
 
 //
