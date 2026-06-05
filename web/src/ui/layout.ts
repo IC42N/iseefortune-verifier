@@ -33,14 +33,12 @@ export function renderLayout() {
           </div>
         </section>
 
-        
-
         <section class="panel isActive" data-panel="verify">
           <div class="mainGrid">
             <section class="card verifierCard">
               <div class="sectionTitle">
                 <div>
-                  <span class="stepPill">Calculate</span>
+                  <span class="stepPill">Verify</span>
                   <h2>Input any completed epoch number</h2>
                 </div>
                 <p>When processing by epoch, the app will automatically find the finalized slot and blockhash for you.</p>
@@ -119,7 +117,7 @@ export function renderLayout() {
             <div class="sectionTitle rowTitle">
               <div>
                 <span class="stepPill">Learn</span>
-                <h2>Learn how the winning number is generated</h2>
+                <h2>How the winning number is generated</h2>
                 <p>Below is a step-by-step breakdown of how the winning number is calculated.</p>
               </div>
 

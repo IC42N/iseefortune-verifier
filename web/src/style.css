@@ -664,6 +664,7 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
     button#goEpoch, button#go { width: 100%; }
     .resultFacts > div { grid-template-columns: 1fr; }
     .winningNumber { font-size: 76px; }
+    .modeButton {font-size: 0.8rem}
     .trustBadge {
         text-align: center;
     }
