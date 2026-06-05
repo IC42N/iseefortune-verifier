@@ -65,7 +65,7 @@ export function renderResult(
 
           <div>
             <span>Range</span>
-            <b>1 – ${vm.range}</b>
+            <b>0 ~ 9</b>
           </div>
 
           <div>

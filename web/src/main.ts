@@ -67,6 +67,11 @@ const toggleTechnicalEl = document.querySelector<HTMLButtonElement>("#toggleTech
 
 function setEpochStatus(msg: string) {
     epochStatusEl.textContent = msg;
+    epochStatusEl.hidden = !msg.trim();
+}
+
+function clearEpochStatus() {
+    setEpochStatus("");
 }
 
 function setNetworkStatus(msg: string) {
@@ -179,6 +184,7 @@ function runVerify(
 
 goEl.addEventListener("click", () => {
     clearExplorerLinks(explorerLinksEl);
+    clearEpochStatus();
 
     const slotStr = slotEl.value.trim();
     const blockhash = bhEl.value.trim();
@@ -205,6 +211,7 @@ goEl.addEventListener("click", () => {
 
 goEpochEl.addEventListener("click", async () => {
     clearExplorerLinks(explorerLinksEl);
+    clearEpochStatus();
     setNetworkStatus("Fetching");
 
     const epochStr = epochEl.value.trim();
@@ -264,7 +271,7 @@ goEpochEl.addEventListener("click", async () => {
             epoch,
         );
 
-        setEpochStatus(`Verified epoch ${epoch}`);
+        setEpochStatus(`✓ Verified epoch ${epoch}`);
         setNetworkStatus("Finalized");
     } catch (err) {
         console.error(err);

@@ -14,18 +14,17 @@ export function renderLayout() {
 
           <div class="heroGrid">
             <div class="heroCopy">
-              <div class="trustBadge">Verified locally • Public Solana data • Offline reproducible</div>
+              <div class="trustBadge">100% Offline Reproducible</div>
               <h1>Verify any winning number yourself.</h1>
               <p>
                 Enter an epoch, fetch the finalized Solana blockhash, and your browser recomputes the winning number step by step.
                 No private server result. No hidden randomness. Same inputs, same result forever.
               </p>
-              <div class="heroActions">
-                <a class="ghostButton" href="https://github.com/IC42N/iseefortune-verifier" target="_blank" rel="noreferrer">View source</a>
-                <button class="ghostButton" id="jumpHow" type="button">How it works</button>
-              </div>
+              <nav class="tabs" aria-label="Verifier sections">
+              <button class="tab isActive" data-tab="verify" type="button">Verify</button>
+              <button class="tab" data-tab="docs" type="button">Overview & Docs</button>
+            </nav>
             </div>
-
             <aside class="trustPanel" aria-label="Trust summary">
               <div class="trustItem"><span>1</span><div><b>Public input</b><small>Epoch + finalized Solana blockhash</small></div></div>
               <div class="trustItem"><span>2</span><div><b>Local calculation</b><small>Runs inside your browser</small></div></div>
@@ -34,20 +33,17 @@ export function renderLayout() {
           </div>
         </section>
 
-        <nav class="tabs" aria-label="Verifier sections">
-          <button class="tab isActive" data-tab="verify" type="button">Verify</button>
-          <button class="tab" data-tab="docs" type="button">Overview & Docs</button>
-        </nav>
+        
 
         <section class="panel isActive" data-panel="verify">
           <div class="mainGrid">
             <section class="card verifierCard">
               <div class="sectionTitle">
                 <div>
-                  <span class="stepPill">Step 1</span>
-                  <h2>Input any epoch</h2>
+                  <span class="stepPill">Calculate</span>
+                  <h2>Input any completed epoch number</h2>
                 </div>
-                <p>Most visitors should use epoch mode. The app finds the finalized slot and blockhash for you.</p>
+                <p>When processing by epoch, the app will automatically find the finalized slot and blockhash for you.</p>
               </div>
 
               <div class="modeSwitch" role="tablist" aria-label="Verification mode">
@@ -68,7 +64,7 @@ export function renderLayout() {
                   </div>
                 </div>
 
-                <div class="statusBox" id="epochStatus">Ready. Enter a completed epoch to fetch public Solana data.</div>
+                <div class="statusBox" id="epochStatus" hidden></div>
 
                 <div class="actionRow">
                   <button id="goEpoch" type="button">Fetch epoch data & verify</button>
@@ -106,7 +102,7 @@ export function renderLayout() {
               </div>
 
               <div class="networkStat"><span>Status</span><b id="networkStatus">Ready</b></div>
-              <div class="networkStat"><span>Range</span><b>1 – ${DEFAULT_RANGE}</b></div>
+              <div class="networkStat"><span>Range</span><b>0 ~ 9</b></div>
               <div class="networkStat"><span>Calculation</span><b>SHA-256</b></div>
             </aside>
           </div>
@@ -122,9 +118,9 @@ export function renderLayout() {
           <section class="card breakdownCard" id="breakdownCard">
             <div class="sectionTitle rowTitle">
               <div>
-                <span class="stepPill">Step 2</span>
-                <h2>How the winning number is generated</h2>
-                <p>Step-by-step breakdown of how the winning number is calculated.</p>
+                <span class="stepPill">Learn</span>
+                <h2>Learn how the winning number is generated</h2>
+                <p>Below is a step-by-step breakdown of how the winning number is calculated.</p>
               </div>
 
               <p>These are the same steps your browser runs. They are shown in plain English first, with technical values available after verification.</p>
@@ -192,21 +188,28 @@ export function renderLayout() {
                 <li>Apply <code>sum % ${DEFAULT_RANGE}</code>, then display the winning number in the game range</li>
               </ol>
 
-              <p class="hint">Same epoch + same blockhash = same winning number forever.</p>
+              <p class="hint">Same epoch + same blockhash = the same winning number forever.</p>
             </section>
           </div>
         </section>
 
         <footer class="footer">
           <section class="trustFooter">
+          <div class="trustFooterInner">
             <div class="trustFooterIcon">
               <i data-lucide="shield-check"></i>
             </div>
-
             <div>
+            <div class="info">
               <strong>This is a tool, not a black box.</strong>
               <p>Verify everything. No blind trust required.</p>
             </div>
+           </div>
+
+           
+            </div>
+             <a class="ghostButton" href="https://github.com/IC42N/iseefortune-verifier" target="_blank" rel="noreferrer">View source code</a>
+              
           </section>
         </footer>
       </main>
