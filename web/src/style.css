@@ -668,5 +668,6 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
     .trustBadge {
         text-align: center;
     }
+    .ghostButton {display: none;}
 
 }
