@@ -98,7 +98,11 @@ export function renderLayout() {
 
             <aside class="card networkCard">
               <div class="networkTop">
-                <div class="solanaOrb"></div>
+                <img
+                  class="solanaLogo"
+                  src="./assets/solana.png"
+                  alt="Solana"
+                />
                 <div>
                   <h3>Solana Mainnet</h3>
                   <p>Finalized blockchain data</p>

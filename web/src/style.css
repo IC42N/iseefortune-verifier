@@ -18,7 +18,6 @@
     --shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
     --radius: 18px;
     --accent: #5df28a;
-    --muted-text: rgba(220, 232, 250, 0.72);
 }
 
 * { box-sizing: border-box; }
@@ -298,7 +297,12 @@ button#goEpoch:hover, button#go:hover { filter: brightness(1.07); }
 
 .networkCard { display: flex; flex-direction: column; gap: 14px; }
 .networkTop { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-.solanaOrb { width: 36px; height: 36px; border-radius: 13px; background: linear-gradient(135deg, #7cffb2, #8f7bff); box-shadow: 0 0 30px rgba(124,255,178,0.16); }
+.solanaLogo {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
 .networkTop h3 { margin: 0; font-size: 15px; }
 .networkTop p { margin: 2px 0 0; color: var(--muted2); font-size: 12px; }
 .networkStat { display: flex; justify-content: space-between; gap: 12px; padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.04); }
@@ -409,14 +413,6 @@ button#goEpoch:hover, button#go:hover { filter: brightness(1.07); }
     padding: 10px 12px;
 }
 
-.timelineWinning {
-    display: block;
-    margin-top: 10px;
-    color: var(--green);
-    font-size: 48px;
-    line-height: 1;
-    font-weight: 950;
-}
 
 .valueBox {
     display: flex;
@@ -484,18 +480,15 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
             ),
             rgba(255,255,255,0.03);
 }
-
 .timelineWinning {
+    display: block;
+    margin-top: 10px;
     color: var(--green);
-
     font-size: 72px;
     line-height: 1;
-
     font-weight: 950;
     letter-spacing: -0.08em;
-
-    text-shadow:
-            0 0 20px rgba(93, 242, 138, 0.25);
+    text-shadow: 0 0 20px rgba(93, 242, 138, 0.25);
 }
 
 
@@ -645,19 +638,11 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
 }
 
 @media (max-width: 768px) {
-    .mobileBackToVerify {
+    body:not(.hasResult) .mobileBackToVerify {
         display: inline-flex;
         width: 100%;
         justify-content: center;
         margin-top: 18px;
-    }
-
-    body.hasResult .mobileBackToVerify {
-        display: none;
-    }
-
-    body:not(.hasResult) .mobileBackToVerify {
-        display: inline-flex;
     }
 }
 
@@ -668,8 +653,6 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
     .resultGrid { align-items: stretch; }
 }
 
-/*.heroActions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }*/
-/*.ghostButton:hover { border-color: rgba(93, 242, 138, 0.38); background: rgba(93, 242, 138, 0.08); }*/
 
 @media (max-width: 680px) {
     .brandRow img {
