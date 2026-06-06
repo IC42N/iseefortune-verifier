@@ -46,13 +46,13 @@ a:hover { text-decoration: none; }
 .hero {
     text-align: left;
     border: 1px solid var(--border);
-    border-radius: 28px;
+    border-radius: 20px;
     padding: 24px;
     background: linear-gradient(180deg, rgba(12, 30, 53, 0.76), rgba(8, 18, 33, 0.7));
     box-shadow: var(--shadow);
     overflow: hidden;
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 .hero::after {
     content: "";
@@ -191,9 +191,9 @@ h1 { font-size: clamp(40px, 7vw, 76px); line-height: 0.95; letter-spacing: -0.06
     box-shadow: 0 16px 42px rgba(0,0,0,0.28);
     padding: 20px;
 }
-.sectionTitle { display: flex; justify-content: space-between; gap: 24px; align-items: start; margin-bottom: 18px; }
-.sectionTitle h2 { margin: 8px 0 0; font-size: 22px; letter-spacing: -0.03em; }
-.sectionTitle p { max-width: 430px; margin: 0; color: var(--muted2); line-height: 1.55; font-size: 13px; }
+.sectionTitle { margin-bottom: 18px; }
+.sectionTitle h2 { margin: 10px 0 6px; font-size: 22px; letter-spacing: -0.03em; }
+.sectionTitle p { margin: 0; color: var(--muted2); line-height: 1.55; font-size: 13px; }
 .stepPill {
     display: inline-flex;
     padding: 5px 9px;
@@ -201,7 +201,7 @@ h1 { font-size: clamp(40px, 7vw, 76px); line-height: 0.95; letter-spacing: -0.06
     background: rgba(143, 123, 255, 0.18);
     color: #c9c2ff;
     border: 1px solid rgba(143, 123, 255, 0.25);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -255,6 +255,22 @@ input::placeholder { color: rgba(220,232,250,0.36); }
     border-radius: 14px;
     background: rgba(255,255,255,0.035);
     padding: 12px;
+}
+.statusBox.loading {
+    color: #93c5fd;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+}
+.statusBox.success {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.statusBox.error {
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
 }
 .actionRow { display: flex; justify-content: flex-end; margin-top: 14px; }
 button#goEpoch, button#go {
@@ -406,42 +422,25 @@ button#goEpoch:hover, button#go:hover { filter: brightness(1.07); }
     display: flex;
     align-items: center;
     gap: 10px;
-
     width: 100%;
     margin-top: 6px;
     padding: 10px 12px;
-
     border-radius: 10px;
     border: 1px solid var(--border);
-
-    background: rgba(255,255,255,0.03);
+    background: rgba(0,0,0,0.18);
 }
 
 .valueBox code {
     flex: 1;
-
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
     background: transparent;
     border: 0;
     padding: 0;
 }
 
-.copyIcon {
-    border: 0;
-    background: transparent;
 
-    cursor: pointer;
-
-    opacity: 0.7;
-    font-size: 14px;
-}
-
-.copyIcon:hover {
-    opacity: 1;
-}
 
 
 .accordionButton {
@@ -572,16 +571,19 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
 
 
 .copyIcon {
+    font-size: 14px;
+    opacity: 0.7;
     flex: 0 0 auto;
     width: 30px;
     height: 30px;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    background: rgba(255,255,255,0.045);
     color: var(--muted);
     display: grid;
     place-items: center;
     cursor: pointer;
+    border: 0;
+    background: none;
+    border-radius: 10px;
+    transition: all 0.15s ease-in-out;
 }
 
 .copyIcon svg {
@@ -591,6 +593,7 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
 }
 
 .copyIcon:hover {
+    opacity: 1;
     color: var(--green);
     border-color: rgba(93,242,138,0.35);
     background: rgba(93,242,138,0.08);
@@ -619,16 +622,6 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
     background: var(--green2);
 }
 
-
-@media (max-width: 980px) {
-    .heroGrid, .mainGrid, .resultGrid, .docsGrid { grid-template-columns: 1fr; }
-    .trustPanel { grid-template-columns: repeat(3, 1fr); }
-    .resultGrid { align-items: stretch; }
-}
-
-
-
-/*.heroActions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }*/
 .ghostButton {
     float: right;
     appearance: none;
@@ -640,8 +633,43 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: #5df28a; }
     font-weight: 750;
     cursor: pointer;
 }
-/*.ghostButton:hover { border-color: rgba(93, 242, 138, 0.38); background: rgba(93, 242, 138, 0.08); }*/
 
+.mobileBackToVerify {
+    display: none;
+    border: 1px solid rgba(93, 242, 138, 0.32);
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, rgba(93, 242, 138, 0.9), rgba(42, 174, 91, 0.9));
+    color: #04130a;
+    font-weight: 950;
+}
+
+@media (max-width: 768px) {
+    .mobileBackToVerify {
+        display: inline-flex;
+        width: 100%;
+        justify-content: center;
+        margin-top: 18px;
+    }
+
+    body.hasResult .mobileBackToVerify {
+        display: none;
+    }
+
+    body:not(.hasResult) .mobileBackToVerify {
+        display: inline-flex;
+    }
+}
+
+
+@media (max-width: 980px) {
+    .heroGrid, .mainGrid, .resultGrid, .docsGrid { grid-template-columns: 1fr; }
+    .trustPanel { grid-template-columns: repeat(3, 1fr); }
+    .resultGrid { align-items: stretch; }
+}
+
+/*.heroActions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }*/
+/*.ghostButton:hover { border-color: rgba(93, 242, 138, 0.38); background: rgba(93, 242, 138, 0.08); }*/
 
 @media (max-width: 680px) {
     .brandRow img {

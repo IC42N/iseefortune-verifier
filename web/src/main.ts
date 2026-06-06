@@ -60,19 +60,55 @@ const networkStatusEl = document.querySelector<HTMLElement>("#networkStatus")!;
 const technicalCardEl = document.querySelector<HTMLElement>("#technicalCard")!;
 const technicalBodyEl =  document.querySelector<HTMLDivElement>("#technicalBody")!;
 const toggleTechnicalEl = document.querySelector<HTMLButtonElement>("#toggleTechnical")!;
-
+const mobileBackToVerifyEl = document.querySelector<HTMLButtonElement>("#mobileBackToVerify");
+const lastEpochLinkEl = document.querySelector<HTMLAnchorElement>("#lastEpochLink")!;
 //
 // Helpers
 //
 
-function setEpochStatus(msg: string) {
+function loadEpochFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const epochParam = params.get("epoch");
+
+    if (!epochParam || !/^\d+$/.test(epochParam)) {
+        return;
+    }
+
+    epochEl.value = epochParam;
+
+    window.setTimeout(() => {
+        goEpochEl.click();
+    }, 0);
+}
+
+mobileBackToVerifyEl?.addEventListener("click", () => {
+    document.querySelector(".verifierCard")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+    });
+});
+function setEpochStatus(
+    msg: string,
+    type?: "loading" | "success" | "error",
+) {
     epochStatusEl.textContent = msg;
     epochStatusEl.hidden = !msg.trim();
+
+    epochStatusEl.classList.remove(
+        "loading",
+        "success",
+        "error",
+    );
+
+    if (type) {
+        epochStatusEl.classList.add(type);
+    }
 }
 
 function clearEpochStatus() {
     setEpochStatus("");
 }
+
 
 function setNetworkStatus(msg: string) {
     networkStatusEl.textContent = msg;
@@ -93,6 +129,28 @@ digitsOnly(slotEl);
 //
 // Technical Output
 //
+
+async function loadLatestCompletedEpochPlaceholder() {
+    try {
+        const rpcUrl = rpcEl.value.trim() || DEFAULT_RPC;
+        const conn = new Connection(rpcUrl, "finalized");
+
+        const currentEpoch = await getCurrentEpoch(conn);
+        const latestCompletedEpoch = currentEpoch - 1;
+
+        epochEl.placeholder = `e.g. ${latestCompletedEpoch}`;
+
+        lastEpochLinkEl.textContent = String(latestCompletedEpoch);
+        lastEpochLinkEl.href = `/?epoch=${latestCompletedEpoch}`;
+    } catch (err) {
+        console.error("Unable to load latest completed epoch:", err);
+
+        epochEl.placeholder = "e.g. completed epoch";
+
+        lastEpochLinkEl.textContent = "--";
+        lastEpochLinkEl.removeAttribute("href");
+    }
+}
 
 function refreshTechnicalOutput() {
     renderTechnicalOutput(
@@ -218,13 +276,13 @@ goEpochEl.addEventListener("click", async () => {
 
     if (!epochStr) {
         setNetworkStatus("Ready");
-        setEpochStatus("Epoch is required.");
+        setEpochStatus("Epoch is required.", "error");
         return;
     }
 
     if (!/^\d+$/.test(epochStr)) {
         setNetworkStatus("Ready");
-        setEpochStatus("Epoch must be a non-negative integer.");
+        setEpochStatus("Epoch must be a non-negative integer.", "error");
         return;
     }
 
@@ -234,22 +292,22 @@ goEpochEl.addEventListener("click", async () => {
     try {
         const conn = new Connection(rpcUrl, "finalized");
 
-        setEpochStatus("Checking epoch status...");
+        setEpochStatus("Checking epoch status...","loading");
 
         const currentEpoch = await getCurrentEpoch(conn);
 
         if (epoch >= currentEpoch) {
             setNetworkStatus("Waiting");
-            setEpochStatus(`Epoch ${epoch} has not ended yet.`);
+            setEpochStatus(`Epoch ${epoch} has not ended yet.`, "error");
             return;
         }
 
-        setEpochStatus("Fetching epoch schedule...");
+        setEpochStatus("Fetching epoch schedule...", "loading");
 
         const schedule = await fetchEpochSchedule(conn);
         const lastSlot = schedule.getLastSlotInEpoch(epoch);
 
-        setEpochStatus("Searching for finalized blockhash...");
+        setEpochStatus("Searching for finalized blockhash...","loading");
 
         const found = await findExistingBlockhashNearSlot(
             conn,
@@ -271,17 +329,17 @@ goEpochEl.addEventListener("click", async () => {
             epoch,
         );
 
-        setEpochStatus(`✓ Verified epoch ${epoch}`);
+        setEpochStatus(`✓ Verified epoch ${epoch}`, "success");
         setNetworkStatus("Finalized");
     } catch (err) {
         console.error(err);
 
         setNetworkStatus("Error");
-
         setEpochStatus(
             err instanceof Error
                 ? err.message
-                : String(err)
+                : String(err),
+            "error",
         );
     }
 });
@@ -289,13 +347,12 @@ goEpochEl.addEventListener("click", async () => {
 //
 // Startup
 //
-
-//
-// Startup
-//
-
 bindTabs();
 bindModes();
+
+void loadLatestCompletedEpochPlaceholder();
+
+loadEpochFromUrl();
 
 refreshTechnicalOutput();
 renderIcons();

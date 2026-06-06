@@ -22,7 +22,7 @@ export function renderLayout() {
               </p>
               <nav class="tabs" aria-label="Verifier sections">
               <button class="tab isActive" data-tab="verify" type="button">Verify</button>
-              <button class="tab" data-tab="docs" type="button">Overview & Docs</button>
+              <button class="tab" data-tab="docs" type="button">How it works</button>
             </nav>
             </div>
             <aside class="trustPanel" aria-label="Trust summary">
@@ -53,7 +53,13 @@ export function renderLayout() {
                 <div class="formGrid">
                   <div class="field compactField">
                     <label for="epoch">Epoch</label>
-                    <input id="epoch" placeholder="e.g. 981" inputmode="numeric" pattern="\\d*" autocomplete="off" />
+                    <input
+                      id="epoch"
+                      placeholder="Loading..."
+                      inputmode="numeric"
+                      pattern="\\d*"
+                      autocomplete="off"
+                    />
                   </div>
 
                   <div class="field">
@@ -100,6 +106,7 @@ export function renderLayout() {
               </div>
 
               <div class="networkStat"><span>Status</span><b id="networkStatus">Ready</b></div>
+              <div class="networkStat"><span>Last Epoch</span><b><a id="lastEpochLink" href="/">Loading...</a></b></div>
               <div class="networkStat"><span>Range</span><b>0 ~ 9</b></div>
               <div class="networkStat"><span>Calculation</span><b>SHA-256</b></div>
             </aside>
@@ -108,15 +115,15 @@ export function renderLayout() {
           <section id="resultCard" class="card resultCard isEmpty">
             <div class="emptyState">
               <div class="emptyIcon">✓</div>
-              <h2>Result will appear here</h2>
-              <p>After verification, this section shows the winning number, the exact inputs, and the full calculation trail.</p>
+              <h2>Ready to verify</h2>
+              <p>Enter a completed epoch above to calculate the winning number. After verification, this section shows the winning number, the exact inputs, and below will display the full calculation trail.</p>
             </div>
           </section>
 
           <section class="card breakdownCard" id="breakdownCard">
             <div class="sectionTitle rowTitle">
               <div>
-                <span class="stepPill">Learn</span>
+                <span class="stepPill">Calculate Offline</span>
                 <h2>How the winning number is generated</h2>
                 <p>Below is a step-by-step breakdown of how the winning number is calculated.</p>
               </div>
@@ -131,6 +138,10 @@ export function renderLayout() {
               <div class="timelineStep"><span>4</span><div><b>Reduce to a number</b><small>Add the digest bytes and apply modulus ${DEFAULT_RANGE}.</small></div></div>
               <div class="timelineStep"><span>5</span><div><b>Final winning number</b><small>The final value is converted to the game range.</small></div></div>
             </div>
+            
+            <button id="mobileBackToVerify" class="mobileBackToVerify" type="button">
+              Back to verifier
+            </button>
           </section>
 
           <section class="card technicalCard" id="technicalCard" hidden>
@@ -165,7 +176,6 @@ export function renderLayout() {
                 This verifier uses public Solana data and deterministic math. The website is only a convenience layer.
                 The result does not depend on a private backend, database, admin panel, or secret value.
               </p>
-
               <div class="proofTiles">
                 <div><b>100% public</b><span>Inputs come from Solana.</span></div>
                 <div><b>Local only</b><span>Calculation happens in-browser.</span></div>
@@ -176,7 +186,6 @@ export function renderLayout() {
             <section class="card explainer" id="howItWorks">
               <div class="eyebrow">Algorithm</div>
               <h2>The complete calculation</h2>
-
               <ol class="steps">
                 <li>Convert <b>slot</b> into 8 bytes: <code>u64 little-endian</code></li>
                 <li>Decode <b>blockhash</b> from base58 into 32 bytes</li>
@@ -185,7 +194,6 @@ export function renderLayout() {
                 <li>Add all 32 digest bytes together</li>
                 <li>Apply <code>sum % ${DEFAULT_RANGE}</code>, then display the winning number in the game range</li>
               </ol>
-
               <p class="hint">Same epoch + same blockhash = the same winning number forever.</p>
             </section>
           </div>
@@ -197,17 +205,12 @@ export function renderLayout() {
             <div class="trustFooterIcon">
               <i data-lucide="shield-check"></i>
             </div>
-            <div>
             <div class="info">
               <strong>This is a tool, not a black box.</strong>
               <p>Verify everything. No blind trust required.</p>
             </div>
            </div>
-
-           
-            </div>
-             <a class="ghostButton" href="https://github.com/IC42N/iseefortune-verifier" target="_blank" rel="noreferrer">View source code</a>
-              
+           <a class="ghostButton" href="https://github.com/IC42N/iseefortune-verifier" target="_blank" rel="noreferrer">View source code</a>
           </section>
         </footer>
       </main>
