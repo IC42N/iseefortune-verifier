@@ -171,3 +171,7 @@ You do not need to trust ISeeFortune — only the code and the blockchain.
 
 MIT
 
+
+
+## Public verifier security release — 2026-10-24
+Browser dependencies refreshed to patched compatible versions; UUID pinned to 11.1.1. GitHub Pages/CI builds use Node 24.22.1. The site is static; Node packages are build-time tools, not a public Node server. TypeScript vector suite passed (1 vector). Browser type check and production build passed on Node 24.22.1 with Vite 6.4.5; no high/critical npm findings remain. Two moderate audit entries are the Jayson/stream-json server-side chain. Stream parser names and assembler code are absent from the emitted browser JavaScript. Pages publication is pending. Legacy Jayson/stream-json server-side dependency reachability must be checked against the emitted browser bundle; these packages are not used as public Node services. Rust binary/CLI maintenance is deferred under the owner public-surface-only instruction.

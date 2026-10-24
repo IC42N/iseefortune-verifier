@@ -33,3 +33,7 @@ ts/build/
 .idea/
 *.swp
 /web-bk/
+
+# Browser verifier generated files
+web/node_modules/
+web/dist/
